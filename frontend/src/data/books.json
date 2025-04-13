@@ -1,0 +1,370 @@
+[
+  {
+    "title": "The Hobbit",
+    "author": "J.R.R. Tolkien",
+    "year": "1937",
+    "genre": "Fantasy",
+    "image": "/the-hobbit.jpg",
+    "bookUrl": "/books/the-hobbit.pdf"
+  },
+  {
+    "title": "Sherlock Holmes: The Complete Collection",
+    "author": "Arthur Conan Doyle",
+    "year": "1887",
+    "genre": "Mystery",
+    "image": "/sherlock.jpg",
+    "bookUrl": "/books/sherlock.pdf"
+  },
+  {
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": "1813",
+    "genre": "Romance",
+    "image": "/pride-prejudice.jpg",
+    "bookUrl": "/books/pride-prejudice.pdf"
+  },
+  {
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "year": "1897",
+    "genre": "Horror",
+    "image": "/dracula.jpg",
+    "bookUrl": "/books/dracula.pdf"
+  },
+  {
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "year": "1965",
+    "genre": "Science Fiction",
+    "image": "/dune.jpg",
+    "bookUrl": "/books/dune.pdf"
+  },
+  {
+    "title": "The Diary of a Young Girl",
+    "author": "Anne Frank",
+    "year": "1947",
+    "genre": "Biography",
+    "image": "/anne-frank.jpg",
+    "bookUrl": "/books/anne-frank.pdf"
+  },
+  {
+    "title": "Atomic Habits",
+    "author": "James Clear",
+    "year": "2018",
+    "genre": "Self-Development",
+    "image": "/atomic-habits.jpg",
+    "bookUrl": "/books/atomic-habits.pdf"
+  },
+  {
+    "title": "Frankenstein",
+    "author": "Mary Shelley",
+    "year": "1818",
+    "genre": "Horror",
+    "image": "/frankenstein.jpg",
+    "bookUrl": "/books/frankenstein.pdf"
+  },
+  {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "year": "1925",
+    "genre": "Romance",
+    "image": "/gatsby.jpg",
+    "bookUrl": "/books/gatsby.pdf"
+  },
+  {
+    "title": "1984",
+    "author": "George Orwell",
+    "year": "1949",
+    "genre": "Science Fiction",
+    "image": "/1984.jpg",
+    "bookUrl": "/books/1984.pdf"
+  },
+  {
+    "title": "The Lord of the Rings",
+    "author": "J.R.R. Tolkien",
+    "year": "1954",
+    "genre": "Fantasy",
+    "image": "/lotr.jpg",
+    "bookUrl": "/books/lotr.pdf"
+  },
+  {
+    "title": "A Game of Thrones",
+    "author": "George R.R. Martin",
+    "year": "1996",
+    "genre": "Fantasy",
+    "image": "/got.jpg",
+    "bookUrl": "/books/got.pdf"
+  },
+  {
+    "title": "The Name of the Wind",
+    "author": "Patrick Rothfuss",
+    "year": "2007",
+    "genre": "Fantasy",
+    "image": "/name-of-the-wind.jpg",
+    "bookUrl": "/books/name-of-the-wind.pdf"
+  },
+  {
+    "title": "Mistborn: The Final Empire",
+    "author": "Brandon Sanderson",
+    "year": "2006",
+    "genre": "Fantasy",
+    "image": "/mistborn.jpg",
+    "bookUrl": "/books/mistborn.pdf"
+  },
+  {
+    "title": "Murder on the Orient Express",
+    "author": "Agatha Christie",
+    "year": "1934",
+    "genre": "Mystery",
+    "image": "/orient-express.jpg",
+    "bookUrl": "/books/orient-express.pdf"
+  },
+  {
+    "title": "Gone Girl",
+    "author": "Gillian Flynn",
+    "year": "2012",
+    "genre": "Mystery",
+    "image": "/gone-girl.jpg",
+    "bookUrl": "/books/gone-girl.pdf"
+  },
+  {
+    "title": "The Girl with the Dragon Tattoo",
+    "author": "Stieg Larsson",
+    "year": "2005",
+    "genre": "Mystery",
+    "image": "/dragon-tattoo.jpg",
+    "bookUrl": "/books/dragon-tattoo.pdf"
+  },
+  {
+    "title": "Big Little Lies",
+    "author": "Liane Moriarty",
+    "year": "2014",
+    "genre": "Mystery",
+    "image": "/big-little-lies.jpg",
+    "bookUrl": "/books/big-little-lies.pdf"
+  },
+  {
+    "title": "Outlander",
+    "author": "Diana Gabaldon",
+    "year": "1991",
+    "genre": "Romance",
+    "image": "/outlander.jpg",
+    "bookUrl": "/books/outlander.pdf"
+  },
+  {
+    "title": "Me Before You",
+    "author": "Jojo Moyes",
+    "year": "2012",
+    "genre": "Romance",
+    "image": "/me-before-you.jpg",
+    "bookUrl": "/books/me-before-you.pdf"
+  },
+  {
+    "title": "The Notebook",
+    "author": "Nicholas Sparks",
+    "year": "1996",
+    "genre": "Romance",
+    "image": "/notebook.jpg",
+    "bookUrl": "/books/notebook.pdf"
+  },
+  {
+    "title": "It",
+    "author": "Stephen King",
+    "year": "1986",
+    "genre": "Horror",
+    "image": "/it.jpg",
+    "bookUrl": "/books/it.pdf"
+  },
+  {
+    "title": "The Shining",
+    "author": "Stephen King",
+    "year": "1977",
+    "genre": "Horror",
+    "image": "/shining.jpg",
+    "bookUrl": "/books/shining.pdf"
+  },
+  {
+    "title": "House of Leaves",
+    "author": "Mark Z. Danielewski",
+    "year": "2000",
+    "genre": "Horror",
+    "image": "/house-of-leaves.jpg",
+    "bookUrl": "/books/house-of-leaves.pdf"
+  },
+  {
+    "title": "The Martian",
+    "author": "Andy Weir",
+    "year": "2011",
+    "genre": "Science Fiction",
+    "image": "/martian.jpg",
+    "bookUrl": "/books/martian.pdf"
+  },
+  {
+    "title": "Ready Player One",
+    "author": "Ernest Cline",
+    "year": "2011",
+    "genre": "Science Fiction",
+    "image": "/ready-player-one.jpg",
+    "bookUrl": "/books/ready-player-one.pdf"
+  },
+  {
+    "title": "Neuromancer",
+    "author": "William Gibson",
+    "year": "1984",
+    "genre": "Science Fiction",
+    "image": "/neuromancer.jpg",
+    "bookUrl": "/books/neuromancer.pdf"
+  },
+  {
+    "title": "The Immortal Life of Henrietta Lacks",
+    "author": "Rebecca Skloot",
+    "year": "2010",
+    "genre": "Biography",
+    "image": "/henrietta-lacks.jpg",
+    "bookUrl": "/books/henrietta-lacks.pdf"
+  },
+  {
+    "title": "Steve Jobs",
+    "author": "Walter Isaacson",
+    "year": "2011",
+    "genre": "Biography",
+    "image": "/steve-jobs.jpg",
+    "bookUrl": "/books/steve-jobs.pdf"
+  },
+  {
+    "title": "Born a Crime",
+    "author": "Trevor Noah",
+    "year": "2016",
+    "genre": "Biography",
+    "image": "/born-a-crime.jpg",
+    "bookUrl": "/books/born-a-crime.pdf"
+  },
+  {
+    "title": "Harry Potter and the Philosopher's Stone",
+    "author": "J.K. Rowling",
+    "year": "1997",
+    "genre": "Fantasy",
+    "image": "/harry-potter-1.jpg",
+    "bookUrl": "/books/harry-potter-1.pdf"
+  },
+  {
+    "title": "Harry Potter and the Chamber of Secrets",
+    "author": "J.K. Rowling",
+    "year": "1998",
+    "genre": "Fantasy",
+    "image": "/harry-potter-2.jpg",
+    "bookUrl": "/books/harry-potter-2.pdf"
+  },
+  {
+    "title": "Harry Potter and the Prisoner of Azkaban",
+    "author": "J.K. Rowling",
+    "year": "1999",
+    "genre": "Fantasy",
+    "image": "/harry-potter-3.jpg",
+    "bookUrl": "/books/harry-potter-3.pdf"
+  },
+  {
+    "title": "Harry Potter and the Goblet of Fire",
+    "author": "J.K. Rowling",
+    "year": "2000",
+    "genre": "Fantasy",
+    "image": "/harry-potter-4.jpg",
+    "bookUrl": "/books/harry-potter-4.pdf"
+  },
+  {
+    "title": "Harry Potter and the Order of the Phoenix",
+    "author": "J.K. Rowling",
+    "year": "2003",
+    "genre": "Fantasy",
+    "image": "/harry-potter-5.jpg",
+    "bookUrl": "/books/harry-potter-5.pdf"
+  },
+  {
+    "title": "Carrie",
+    "author": "Stephen King",
+    "year": "1974",
+    "genre": "Horror",
+    "image": "/carrie.jpg",
+    "bookUrl": "/books/carrie.pdf"
+  },
+  {
+    "title": "Pet Sematary",
+    "author": "Stephen King",
+    "year": "1983",
+    "genre": "Horror",
+    "image": "/pet-sematary.jpg",
+    "bookUrl": "/books/pet-sematary.pdf"
+  },
+  {
+    "title": "Salem's Lot",
+    "author": "Stephen King",
+    "year": "1975",
+    "genre": "Horror",
+    "image": "/salems-lot.jpg",
+    "bookUrl": "/books/salems-lot.pdf"
+  },
+  {
+    "title": "The Stand",
+    "author": "Stephen King",
+    "year": "1978",
+    "genre": "Horror",
+    "image": "/the-stand.jpg",
+    "bookUrl": "/books/the-stand.pdf"
+  },
+  {
+    "title": "And Then There Were None",
+    "author": "Agatha Christie",
+    "year": "1939",
+    "genre": "Mystery",
+    "image": "/and-then-none.jpg",
+    "bookUrl": "/books/and-then-none.pdf"
+  },
+  {
+    "title": "Death on the Nile",
+    "author": "Agatha Christie",
+    "year": "1937",
+    "genre": "Mystery",
+    "image": "/death-on-nile.jpg",
+    "bookUrl": "/books/death-on-nile.pdf"
+  },
+  {
+    "title": "The Murder of Roger Ackroyd",
+    "author": "Agatha Christie",
+    "year": "1926",
+    "genre": "Mystery",
+    "image": "/roger-ackroyd.jpg",
+    "bookUrl": "/books/roger-ackroyd.pdf"
+  },
+  {
+    "title": "The ABC Murders",
+    "author": "Agatha Christie",
+    "year": "1936",
+    "genre": "Mystery",
+    "image": "/abc-murders.jpg",
+    "bookUrl": "/books/abc-murders.pdf"
+  },
+  {
+    "title": "Animal Farm",
+    "author": "George Orwell",
+    "year": "1945",
+    "genre": "Science Fiction",
+    "image": "/animal-farm.jpg",
+    "bookUrl": "/books/animal-farm.pdf"
+  },
+  {
+    "title": "Homage to Catalonia",
+    "author": "George Orwell",
+    "year": "1938",
+    "genre": "Biography",
+    "image": "/homage-catalonia.jpg",
+    "bookUrl": "/books/homage-catalonia.pdf"
+  },
+  {
+    "title": "Down and Out in Paris and London",
+    "author": "George Orwell",
+    "year": "1933",
+    "genre": "Biography",
+    "image": "/down-and-out.jpg",
+    "bookUrl": "/books/down-and-out.pdf"
+  }
+]

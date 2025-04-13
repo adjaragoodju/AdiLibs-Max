@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
+@import 'tailwindcss';
+
+:root {
+  font-family: 'Poppins', sans-serif;
+}
+
+h1,
+h2,
+h3,
+.heading {
+  font-family: 'Playfair Display', serif;
+}
+/* Add these styles to your CSS file */
+
+/* Hide default Swiper navigation buttons */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  display: none;
+}
+
+/* Custom pagination */
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: #ccc;
+  opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+  background: #000;
+}
+
+/* Custom navigation buttons */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: #f3f4f6;
+  transform: scale(1.1);
+}
+
+/* Books swiper custom styles */
+.books-swiper .swiper-slide {
+  height: auto;
+  display: flex;
+  justify-content: center;
+}
+
+/* Brand swiper custom styles */
+.brand-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+}
+
+/* Add hover effect to brand slides */
+.brand-swiper .swiper-slide img {
+  transition: all 0.3s ease;
+  filter: grayscale(100%);
+  opacity: 0.7;
+}
+
+.brand-swiper .swiper-slide:hover img {
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+/* Adjust Swiper for different screen sizes */
+@media (max-width: 640px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 32px;
+    height: 32px;
+  }
+
+  .swiper-button-next svg,
+  .swiper-button-prev svg {
+    width: 16px;
+    height: 16px;
+  }
+}
