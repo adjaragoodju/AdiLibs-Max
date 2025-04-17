@@ -1,149 +1,122 @@
-// controllers/recommendations.controller.js
+// controllers/recommendations.controller.js - enhance the recommendation logic
+
+// Add a function to calculate content-based recommendations
+const getContentBasedRecommendations = async (db, userId, limit = 10) => {
+  // Get user's book history with ratings
+  const userHistory = await db.query(
+    `
+    SELECT b.id, b.title, r.rating, array_agg(g.id) as genre_ids
+    FROM user_books ub
+    JOIN books b ON ub.book_id = b.id
+    LEFT JOIN reviews r ON r.user_id = ub.user_id AND r.book_id = b.id
+    JOIN book_genres bg ON b.id = bg.book_id
+    JOIN genres g ON bg.genre_id = g.id
+    WHERE ub.user_id = $1
+    GROUP BY b.id, b.title, r.rating
+  `,
+    [userId]
+  );
+
+  if (userHistory.rows.length === 0) {
+    return [];
+  }
+
+  // Extract user's genre preferences with weights
+  const genrePreferences = new Map();
+
+  userHistory.rows.forEach((book) => {
+    // Use rating as weight, default to 3 if no rating
+    const weight = book.rating ? book.rating : 3;
+
+    book.genre_ids.forEach((genreId) => {
+      genrePreferences.set(
+        genreId,
+        (genrePreferences.get(genreId) || 0) + weight
+      );
+    });
+  });
+
+  // Normalize weights
+  const totalWeight = Array.from(genrePreferences.values()).reduce(
+    (sum, val) => sum + val,
+    0
+  );
+
+  genrePreferences.forEach((value, key) => {
+    genrePreferences.set(key, value / totalWeight);
+  });
+
+  // Get read book IDs to exclude
+  const readBookIds = userHistory.rows.map((book) => book.id);
+
+  // Get recommendations based on genre preferences
+  const recommendationsResult = await db.query(
+    `
+    WITH book_scores AS (
+      SELECT 
+        b.id,
+        b.title,
+        b.image_url,
+        a.name as author_name,
+        b.average_rating,
+        b.rating_count,
+        SUM(
+          CASE 
+            WHEN bg.genre_id = ANY($1) THEN 
+              $2[array_position($1, bg.genre_id)] * b.average_rating 
+            ELSE 0 
+          END
+        ) as score
+      FROM books b
+      JOIN authors a ON b.author_id = a.id
+      JOIN book_genres bg ON b.id = bg.book_id
+      WHERE b.id <> ALL($3)
+      GROUP BY b.id, a.name
+    )
+    SELECT * FROM book_scores
+    ORDER BY score DESC, average_rating DESC
+    LIMIT $4
+  `,
+    [
+      Array.from(genrePreferences.keys()),
+      Array.from(genrePreferences.values()),
+      readBookIds,
+      limit,
+    ]
+  );
+
+  return recommendationsResult.rows;
+};
+
+// Then use this function in your controller
 exports.getPersonalizedRecommendations = async (req, res) => {
   const userId = req.user.id;
   const db = req.app.get('db');
 
   try {
-    // Get user's favorite genres based on reading history
-    const favoriteGenresResult = await db.query(
-      `
-      SELECT g.id, g.name, COUNT(*) as book_count
-      FROM user_books ub
-      JOIN books b ON ub.book_id = b.id
-      JOIN book_genres bg ON b.id = bg.book_id
-      JOIN genres g ON bg.genre_id = g.id
-      WHERE ub.user_id = $1
-      GROUP BY g.id, g.name
-      ORDER BY book_count DESC
-      LIMIT 3
-    `,
-      [userId]
-    );
+    // Try content-based recommendations first
+    const recommendations = await getContentBasedRecommendations(db, userId);
 
-    if (favoriteGenresResult.rows.length === 0) {
-      // User has no reading history, return popular books
-      const popularBooksResult = await db.query(`
-        SELECT b.*, a.name as author_name
-        FROM books b
-        JOIN authors a ON b.author_id = a.id
-        ORDER BY b.rating_count DESC, b.average_rating DESC
-        LIMIT 10
-      `);
-
+    if (recommendations.length > 0) {
       return res.json({
-        recommendations: popularBooksResult.rows,
-        type: 'popular',
+        recommendations,
+        type: 'personalized',
       });
     }
 
-    // Get books in user's favorite genres that they haven't read
-    const genreIds = favoriteGenresResult.rows.map((g) => g.id);
-    const recommendationsResult = await db.query(
-      `
-      SELECT DISTINCT ON (b.id) b.*, a.name as author_name
-      FROM books b
-      JOIN authors a ON b.author_id = a.id
-      JOIN book_genres bg ON b.id = bg.book_id
-      LEFT JOIN user_books ub ON b.id = ub.book_id AND ub.user_id = $1
-      WHERE bg.genre_id = ANY($2) AND ub.id IS NULL
-      ORDER BY b.id, b.average_rating DESC
-      LIMIT 10
-    `,
-      [userId, genreIds]
-    );
-
-    res.json({
-      recommendations: recommendationsResult.rows,
-      favoriteGenres: favoriteGenresResult.rows,
-      type: 'personalized',
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-exports.getSimilarBooks = async (req, res) => {
-  const { bookId } = req.params;
-  const db = req.app.get('db');
-
-  try {
-    // Get book genres
-    const bookGenresResult = await db.query(
-      `
-      SELECT g.id 
-      FROM book_genres bg
-      JOIN genres g ON bg.genre_id = g.id
-      WHERE bg.book_id = $1
-    `,
-      [bookId]
-    );
-
-    if (bookGenresResult.rows.length === 0) {
-      return res
-        .status(404)
-        .json({ message: 'Book not found or has no genres' });
-    }
-
-    // Get book author
-    const bookAuthorResult = await db.query(
-      `
-      SELECT author_id
-      FROM books
-      WHERE id = $1
-    `,
-      [bookId]
-    );
-
-    const authorId = bookAuthorResult.rows[0]?.author_id;
-    const genreIds = bookGenresResult.rows.map((g) => g.id);
-
-    // controllers/recommendations.controller.js (continued)
-    // Get similar books
-    const similarBooksResult = await db.query(
-      `
-      SELECT DISTINCT ON (b.id) b.*, a.name as author_name
-      FROM books b
-      JOIN authors a ON b.author_id = a.id
-      JOIN book_genres bg ON b.id = bg.book_id
-      WHERE b.id != $1 AND (
-        (bg.genre_id = ANY($2) AND b.author_id = $3) OR
-        (bg.genre_id = ANY($2) AND b.author_id != $3)
-      )
-      ORDER BY b.id, 
-               CASE WHEN b.author_id = $3 THEN 0 ELSE 1 END,
-               b.average_rating DESC
-      LIMIT 10
-    `,
-      [bookId, genreIds, authorId]
-    );
-
-    res.json(similarBooksResult.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-exports.getPopularInGenre = async (req, res) => {
-  const { genreId } = req.params;
-  const db = req.app.get('db');
-
-  try {
-    const result = await db.query(
-      `
+    // Fall back to popular books if no recommendations
+    const popularBooksResult = await db.query(`
       SELECT b.*, a.name as author_name
       FROM books b
       JOIN authors a ON b.author_id = a.id
-      JOIN book_genres bg ON b.id = bg.book_id
-      WHERE bg.genre_id = $1
       ORDER BY b.rating_count DESC, b.average_rating DESC
       LIMIT 10
-    `,
-      [genreId]
-    );
+    `);
 
-    res.json(result.rows);
+    return res.json({
+      recommendations: popularBooksResult.rows,
+      type: 'popular',
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });

@@ -1,3 +1,4 @@
+// src/components/sections/SearchResults.jsx
 import React from 'react';
 import Book from '../books/Book';
 
@@ -7,6 +8,33 @@ const SearchResults = ({
   setShowSearchResults,
   handleBookClick,
 }) => {
+  // Helper function to highlight text
+  const highlightText = (text, query) => {
+    if (!query || !text) {
+      return text;
+    }
+
+    // Split text by the query (case insensitive)
+    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+
+    return (
+      <>
+        {parts.map((part, i) => {
+          // Check if this part matches the query (case insensitive)
+          const isMatch = part.toLowerCase() === query.toLowerCase();
+
+          return isMatch ? (
+            <mark key={i} className='bg-yellow-200 px-0.5 rounded'>
+              {part}
+            </mark>
+          ) : (
+            <span key={i}>{part}</span>
+          );
+        })}
+      </>
+    );
+  };
+
   return (
     <section className='container mx-auto px-4 my-16'>
       <div className='flex justify-between items-center mb-8'>
@@ -35,6 +63,14 @@ const SearchResults = ({
                 year={book.year}
                 image={book.image || '/placeholder-book.jpg'}
               />
+              <div className='mt-2'>
+                <div className='font-medium text-sm block'>
+                  {highlightText(book.title, searchQuery)}
+                </div>
+                <div className='text-gray-600 text-xs'>
+                  {highlightText(book.author, searchQuery)}
+                </div>
+              </div>
             </div>
           ))}
         </div>

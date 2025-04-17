@@ -1,41 +1,28 @@
-import React, { useState, useContext } from 'react';
+// frontend/src/pages/Register.jsx
+import React, { useContext, useState } from 'react';
 import { authService } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import useFormValidation from '../hooks/useFormValidation';
+import { validateRegistrationForm } from '../utils/validation';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
+  const { setUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState('');
+
+  // Initial form values
+  const initialValues = {
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { setUser } = useContext(AuthContext);
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    setLoading(true);
-
+  // Handle successful registration
+  const handleRegister = async (values) => {
     try {
-      const { confirmPassword, ...registerData } = formData;
+      const { confirmPassword, ...registerData } = values;
       const response = await authService.register(registerData);
 
       localStorage.setItem('accessToken', response.data.accessToken);
@@ -44,21 +31,35 @@ const Register = () => {
 
       navigate('/');
     } catch (err) {
-      setError(
+      setServerError(
         err.response?.data?.message || 'Registration failed. Please try again.'
       );
-    } finally {
-      setLoading(false);
     }
   };
+
+  // Use our custom form validation hook
+  const {
+    values,
+    errors,
+    touched,
+    isSubmitting,
+    isValid,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+  } = useFormValidation(
+    initialValues,
+    validateRegistrationForm,
+    handleRegister
+  );
 
   return (
     <div className='container mx-auto px-4 py-16 max-w-md'>
       <h1 className='text-3xl font-bold mb-8 text-center'>Create an Account</h1>
 
-      {error && (
+      {serverError && (
         <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4'>
-          {error}
+          {serverError}
         </div>
       )}
 
@@ -77,12 +78,17 @@ const Register = () => {
             id='name'
             name='name'
             type='text'
-            value={formData.name}
+            value={values.name}
             onChange={handleChange}
-            required
-            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.name && touched.name ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder='Your name'
           />
+          {errors.name && touched.name && (
+            <p className='text-red-500 text-xs mt-1'>{errors.name}</p>
+          )}
         </div>
 
         <div className='mb-6'>
@@ -96,12 +102,19 @@ const Register = () => {
             id='email'
             name='email'
             type='email'
-            value={formData.email}
+            value={values.email}
             onChange={handleChange}
-            required
-            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.email && touched.email
+                ? 'border-red-500'
+                : 'border-gray-300'
+            }`}
             placeholder='Your email'
           />
+          {errors.email && touched.email && (
+            <p className='text-red-500 text-xs mt-1'>{errors.email}</p>
+          )}
         </div>
 
         <div className='mb-6'>
@@ -115,12 +128,28 @@ const Register = () => {
             id='password'
             name='password'
             type='password'
-            value={formData.password}
+            value={values.password}
             onChange={handleChange}
-            required
-            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.password && touched.password
+                ? 'border-red-500'
+                : 'border-gray-300'
+            }`}
             placeholder='Choose a password'
           />
+          {errors.password && touched.password && (
+            <p className='text-red-500 text-xs mt-1'>{errors.password}</p>
+          )}
+          <div className='mt-2 text-xs text-gray-500'>
+            <p>Password must:</p>
+            <ul className='list-disc pl-5'>
+              <li>Be at least 8 characters long</li>
+              <li>Include uppercase and lowercase letters</li>
+              <li>Include at least one number</li>
+              <li>Include at least one special character</li>
+            </ul>
+          </div>
         </div>
 
         <div className='mb-6'>
@@ -134,20 +163,31 @@ const Register = () => {
             id='confirmPassword'
             name='confirmPassword'
             type='password'
-            value={formData.confirmPassword}
+            value={values.confirmPassword}
             onChange={handleChange}
-            required
-            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.confirmPassword && touched.confirmPassword
+                ? 'border-red-500'
+                : 'border-gray-300'
+            }`}
             placeholder='Confirm your password'
           />
+          {errors.confirmPassword && touched.confirmPassword && (
+            <p className='text-red-500 text-xs mt-1'>
+              {errors.confirmPassword}
+            </p>
+          )}
         </div>
 
         <button
           type='submit'
-          disabled={loading}
-          className='w-full bg-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50'
+          disabled={isSubmitting}
+          className={`w-full bg-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 ${
+            isSubmitting || !isValid ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
         >
-          {loading ? 'Creating Account...' : 'Create Account'}
+          {isSubmitting ? 'Creating Account...' : 'Create Account'}
         </button>
 
         <div className='mt-6 text-center text-sm'>

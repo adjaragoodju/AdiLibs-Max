@@ -1,7 +1,7 @@
+// src/pages/Root.jsx
 import { useState, useRef } from 'react';
 import { useBooks } from '../hooks/useBooks';
 import { useScrollToSection } from '../hooks/useScrollToSection';
-import { FavoritesProvider } from '../context/FavoritesContext';
 
 // Import layout components
 import Header from '../components/layout/Header';
@@ -67,13 +67,15 @@ const Root = () => {
 
     // Add scroll after setting results
     setTimeout(() => {
-      window.scrollTo({
-        top:
-          document.querySelector('section').getBoundingClientRect().top +
-          window.pageYOffset -
-          100,
-        behavior: 'smooth',
-      });
+      if (document.querySelector('section')) {
+        window.scrollTo({
+          top:
+            document.querySelector('section').getBoundingClientRect().top +
+            window.pageYOffset -
+            100,
+          behavior: 'smooth',
+        });
+      }
     }, 100);
   };
 
@@ -83,7 +85,7 @@ const Root = () => {
   };
 
   return (
-    <FavoritesProvider>
+    <>
       <Header
         uniqueGenres={uniqueGenres}
         uniqueAuthors={uniqueAuthors}
@@ -138,46 +140,14 @@ const Root = () => {
           handleBookClick={handleBookClick}
         />
 
-        <ReviewsSection
-          reviewsRef={reviewsRef}
-          customerReviews={[
-            {
-              name: 'Sarah Johnson',
-              avatar: '/reviewers/sarah.jpg',
-              rating: 5,
-              text: 'AdiLibs has completely transformed my reading experience! The user-friendly interface makes it so easy to discover new books. I especially love how I can filter by genre and author.',
-              date: 'March 15, 2025',
-            },
-            {
-              name: 'Michael Chen',
-              avatar: '/reviewers/michael.jpg',
-              rating: 4,
-              text: "Great selection of books across multiple genres. The author recommendations are spot on, and I've discovered several new favorites through this platform.",
-              date: 'February 22, 2025',
-            },
-            {
-              name: 'Elena Rodriguez',
-              avatar: '/reviewers/elena.jpg',
-              rating: 5,
-              text: 'The curated collections are absolutely fantastic! I love how AdiLibs suggests books based on my previous readings. The favorites feature helps me keep track of what I want to read next.',
-              date: 'March 28, 2025',
-            },
-            {
-              name: 'David Thompson',
-              avatar: '/reviewers/david.jpg',
-              rating: 5,
-              text: 'As an avid reader, I appreciate how easy AdiLibs makes it to find quality books. The interface is clean, navigation is intuitive, and the recommendations are spot-on.',
-              date: 'March 5, 2025',
-            },
-          ]}
-        />
+        <ReviewsSection reviewsRef={reviewsRef} />
 
         <AuthorsSection
           authorsRef={authorsRef}
           popularAuthors={[
             {
               name: 'J.K. Rowling',
-              image: 'rowling.jpg',
+              image: '/rowling.jpg',
               books: 7,
               genre: 'Fantasy',
               description:
@@ -185,7 +155,7 @@ const Root = () => {
             },
             {
               name: 'Stephen King',
-              image: 'stephen-king.jpg',
+              image: '/stephen-king.jpg',
               books: 61,
               genre: 'Horror',
               description:
@@ -193,7 +163,7 @@ const Root = () => {
             },
             {
               name: 'Agatha Christie',
-              image: 'agatha-christie.jpg',
+              image: '/agatha-christie.jpg',
               books: 66,
               genre: 'Mystery',
               description:
@@ -201,7 +171,7 @@ const Root = () => {
             },
             {
               name: 'George Orwell',
-              image: 'george-orwell.jpg',
+              image: '/george-orwell.jpg',
               books: 9,
               genre: 'Dystopian',
               description:
@@ -243,7 +213,7 @@ const Root = () => {
           genresRef={genresRef}
         />
       )}
-    </FavoritesProvider>
+    </>
   );
 };
 

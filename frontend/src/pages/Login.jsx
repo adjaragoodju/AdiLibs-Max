@@ -1,46 +1,73 @@
-import React, { useState, useContext } from 'react';
+// frontend/src/pages/Login.jsx
+import React, { useContext } from 'react';
 import { authService } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import useFormValidation from '../hooks/useFormValidation';
+import { validateLoginForm } from '../utils/validation';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  // Get the redirect URL from query params if available
+  const redirectUrl =
+    new URLSearchParams(location.search).get('redirect') || '/';
+
+  // Initial form values
+  const initialValues = {
+    email: '',
+    password: '',
+    rememberMe: false,
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
+  // Handle successful login
+  const handleLogin = async (values) => {
     try {
-      const response = await authService.login(formData);
+      const response = await authService.login({
+        email: values.email,
+        password: values.password,
+      });
 
+      // Store tokens
       localStorage.setItem('accessToken', response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
+
+      // If remember me is checked, store for 30 days
+      if (values.rememberMe) {
+        const thirtyDaysFromNow = new Date();
+        thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+        localStorage.setItem('authExpiry', thirtyDaysFromNow.toString());
+      }
+
+      // Update user context
       setUser(response.data.user);
 
-      navigate('/');
+      // Redirect user
+      navigate(redirectUrl);
     } catch (err) {
-      setError(
+      // Set server error
+      setServerError(
         err.response?.data?.message || 'Login failed. Please try again.'
       );
-    } finally {
-      setLoading(false);
     }
   };
+
+  // Use our custom form validation hook
+  const {
+    values,
+    errors,
+    touched,
+    isSubmitting,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    isValid,
+  } = useFormValidation(initialValues, validateLoginForm, handleLogin);
+
+  // Track server errors separately
+  const [serverError, setServerError] = React.useState('');
 
   return (
     <div className='container mx-auto px-4 py-16 max-w-md'>
@@ -48,9 +75,9 @@ const Login = () => {
         Sign In to AdiLibs
       </h1>
 
-      {error && (
+      {serverError && (
         <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4'>
-          {error}
+          {serverError}
         </div>
       )}
 
@@ -69,12 +96,19 @@ const Login = () => {
             id='email'
             name='email'
             type='email'
-            value={formData.email}
+            value={values.email}
             onChange={handleChange}
-            required
-            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.email && touched.email
+                ? 'border-red-500'
+                : 'border-gray-300'
+            }`}
             placeholder='Your email'
           />
+          {errors.email && touched.email && (
+            <p className='text-red-500 text-xs mt-1'>{errors.email}</p>
+          )}
         </div>
 
         <div className='mb-6'>
@@ -88,23 +122,33 @@ const Login = () => {
             id='password'
             name='password'
             type='password'
-            value={formData.password}
+            value={values.password}
             onChange={handleChange}
-            required
-            className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+            onBlur={handleBlur}
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.password && touched.password
+                ? 'border-red-500'
+                : 'border-gray-300'
+            }`}
             placeholder='Your password'
           />
+          {errors.password && touched.password && (
+            <p className='text-red-500 text-xs mt-1'>{errors.password}</p>
+          )}
         </div>
 
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center'>
             <input
-              id='remember'
+              id='rememberMe'
+              name='rememberMe'
               type='checkbox'
+              checked={values.rememberMe}
+              onChange={handleChange}
               className='h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500'
             />
             <label
-              htmlFor='remember'
+              htmlFor='rememberMe'
               className='ml-2 block text-sm text-gray-900'
             >
               Remember me
@@ -118,10 +162,12 @@ const Login = () => {
 
         <button
           type='submit'
-          disabled={loading}
-          className='w-full bg-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50'
+          disabled={isSubmitting}
+          className={`w-full bg-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 ${
+            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
         >
-          {loading ? 'Signing in...' : 'Sign In'}
+          {isSubmitting ? 'Signing in...' : 'Sign In'}
         </button>
 
         <div className='mt-6 text-center text-sm'>
