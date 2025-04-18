@@ -1,15 +1,15 @@
 // frontend/src/pages/Login.jsx
-import React, { useContext } from 'react';
-import { authService } from '../services/api';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import useFormValidation from '../hooks/useFormValidation';
 import { validateLoginForm } from '../utils/validation';
 
 const Login = () => {
-  const { setUser } = useContext(AuthContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [serverError, setServerError] = useState('');
 
   // Get the redirect URL from query params if available
   const redirectUrl =
@@ -25,14 +25,10 @@ const Login = () => {
   // Handle successful login
   const handleLogin = async (values) => {
     try {
-      const response = await authService.login({
+      await login({
         email: values.email,
         password: values.password,
       });
-
-      // Store tokens
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
 
       // If remember me is checked, store for 30 days
       if (values.rememberMe) {
@@ -41,16 +37,11 @@ const Login = () => {
         localStorage.setItem('authExpiry', thirtyDaysFromNow.toString());
       }
 
-      // Update user context
-      setUser(response.data.user);
-
       // Redirect user
       navigate(redirectUrl);
     } catch (err) {
       // Set server error
-      setServerError(
-        err.response?.data?.message || 'Login failed. Please try again.'
-      );
+      setServerError(err.message);
     }
   };
 
@@ -65,9 +56,6 @@ const Login = () => {
     handleSubmit,
     isValid,
   } = useFormValidation(initialValues, validateLoginForm, handleLogin);
-
-  // Track server errors separately
-  const [serverError, setServerError] = React.useState('');
 
   return (
     <div className='container mx-auto px-4 py-16 max-w-md'>
@@ -155,9 +143,12 @@ const Login = () => {
             </label>
           </div>
 
-          <a href='#' className='text-sm text-blue-600 hover:underline'>
+          <Link
+            to='/forgot-password'
+            className='text-sm text-blue-600 hover:underline'
+          >
             Forgot password?
-          </a>
+          </Link>
         </div>
 
         <button

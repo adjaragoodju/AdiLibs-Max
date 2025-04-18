@@ -1,0 +1,44 @@
+[2025-04-18T11:04:37.448Z] [INFO] Server running on port 3000
+[2025-04-18T11:04:37.474Z] [INFO] Connected to PostgreSQL database
+[2025-04-18T11:04:37.481Z] [INFO] Connected to PostgreSQL database
+[2025-04-18T11:04:44.866Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM users WHERE email = $1",
+  "params": [
+    "adil@adil.com"
+  ]
+}
+[2025-04-18T11:04:44.957Z] [INFO] User registered: adil@adil.com
+[2025-04-18T11:04:44.958Z] [INFO] POST /api/auth/register 201 97ms
+[2025-04-18T11:04:48.516Z] [WARN] GET /api/my-reviews 404 6ms
+[2025-04-18T11:04:48.541Z] [INFO] GET /api/user-books 200 36ms
+[2025-04-18T11:04:48.542Z] [INFO] GET /api/user-books/stats 200 24ms
+[2025-04-18T11:05:22.025Z] [WARN] GET /api/my-reviews 404 2ms
+[2025-04-18T11:05:22.029Z] [WARN] GET /api/my-reviews 404 1ms
+[2025-04-18T11:05:22.049Z] [INFO] GET /api/user-books/stats 304 23ms
+[2025-04-18T11:05:22.050Z] [INFO] GET /api/user-books/stats 304 17ms
+[2025-04-18T11:05:22.050Z] [INFO] GET /api/user-books 304 19ms
+[2025-04-18T11:05:22.049Z] [INFO] GET /api/user-books 304 14ms
+[2025-04-18T11:05:53.390Z] [WARN] GET /api/my-reviews 404 1ms
+[2025-04-18T11:05:53.394Z] [WARN] GET /api/my-reviews 404 2ms
+[2025-04-18T11:05:53.410Z] [INFO] GET /api/user-books 304 26ms
+[2025-04-18T11:05:53.410Z] [INFO] GET /api/user-books 304 24ms
+[2025-04-18T11:05:53.411Z] [INFO] GET /api/user-books/stats 304 20ms
+[2025-04-18T11:05:53.411Z] [INFO] GET /api/user-books/stats 304 16ms
+[2025-04-18T11:06:06.081Z] [DEBUG] DB Query
+Data: {
+  "query": "DELETE FROM refresh_tokens WHERE token = $1",
+  "params": [
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidG9rZW5JZCI6IjZlMTdkM2YzLWNlZDAtNDYwNi05YjZhLThiZGE4MzMzYjA4YyIsImlhdCI6MTc0NDk3NDI4NCwiZXhwIjoxNzQ1NTc5MDg0fQ.kEllCVOfT-kiqkvSSTBLkiVnLO4u6NrpsTBBxP38nHY"
+  ]
+}
+[2025-04-18T11:06:06.100Z] [INFO] User logged out successfully
+[2025-04-18T11:06:06.102Z] [INFO] POST /api/auth/logout 200 21ms
+[2025-04-18T11:07:07.121Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM users WHERE email = $1",
+  "params": [
+    "adil@adil.com"
+  ]
+}
+[2025-04-18T11:07:07.211Z] [WARN] POST /api/auth/login 401 95ms

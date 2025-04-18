@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { userBookService, reviewService } from '../services/api';
-import ReadingStats from './ReadingStats';
-import UserBooksList from './UserBooksList';
+import ReadingStats from '../components/ReadingStats';
+import UserBooksList from '../components/UserBooksList';
 import UserReviewsList from './UserReviewsList';
 
 const Profile = () => {

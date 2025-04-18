@@ -1,13 +1,12 @@
 // frontend/src/pages/Register.jsx
-import React, { useContext, useState } from 'react';
-import { authService } from '../services/api';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import useFormValidation from '../hooks/useFormValidation';
 import { validateRegistrationForm } from '../utils/validation';
 
 const Register = () => {
-  const { setUser } = useContext(AuthContext);
+  const { register } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
 
@@ -23,17 +22,12 @@ const Register = () => {
   const handleRegister = async (values) => {
     try {
       const { confirmPassword, ...registerData } = values;
-      const response = await authService.register(registerData);
+      await register(registerData);
 
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-      setUser(response.data.user);
-
+      // Redirect to home page
       navigate('/');
     } catch (err) {
-      setServerError(
-        err.response?.data?.message || 'Registration failed. Please try again.'
-      );
+      setServerError(err.message);
     }
   };
 

@@ -4,6 +4,11 @@ const cors = require('cors');
 const morgan = require('morgan');
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
+const logger = require('./utils/logger');
+const {
+  errorHandler,
+  notFoundHandler,
+} = require('./middleware/error.middleware');
 
 // Load environment variables
 dotenv.config();
@@ -23,9 +28,10 @@ const pool = new Pool({
 // Test database connection
 pool.connect((err, client, release) => {
   if (err) {
-    return console.error('Error acquiring client', err.stack);
+    logger.error('Error acquiring client', { error: err.stack });
+    return;
   }
-  console.log('Connected to PostgreSQL database');
+  logger.info('Connected to PostgreSQL database');
   release();
 });
 
@@ -37,10 +43,11 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(logger.httpLogger); // Add custom HTTP logger
 
-// 🔽 Тестовый маршрут для проверки сервера
+// Test route
 app.get('/', (req, res) => {
-  res.send('Сервер работает! ✅');
+  res.send('Server is running! ✅');
 });
 
 // Routes
@@ -50,18 +57,39 @@ app.use('/api/books', require('./routes/books.routes'));
 app.use('/api/authors', require('./routes/authors.routes'));
 app.use('/api/reviews', require('./routes/reviews.routes'));
 app.use('/api/user-books', require('./routes/userBooks.routes'));
+app.use('/api/recommendations', require('./routes/recommendations.routes'));
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message: 'An unexpected error occurred',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined,
-  });
-});
+// Handle 404 errors
+app.use(notFoundHandler);
+
+// Global error handler
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+  logger.info(`Server running on port ${PORT}`);
 });
+
+// Graceful shutdown
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
+function shutdown() {
+  logger.info('Closing database pool and shutting down server...');
+
+  server.close(() => {
+    logger.info('HTTP server closed');
+
+    pool.end(() => {
+      logger.info('Database pool closed');
+      process.exit(0);
+    });
+  });
+
+  // Force close after 10 seconds if graceful shutdown fails
+  setTimeout(() => {
+    logger.error('Forced shutdown after timeout');
+    process.exit(1);
+  }, 10000);
+}

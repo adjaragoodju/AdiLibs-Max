@@ -1,6 +1,13 @@
 // frontend/src/components/ReadingStats.jsx
 import React from 'react';
-import { Bar } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 const ReadingStats = ({ stats }) => {
   if (!stats) return <p>Loading stats...</p>;

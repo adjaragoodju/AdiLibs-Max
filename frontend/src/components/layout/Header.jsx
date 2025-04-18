@@ -1,6 +1,9 @@
-import React from 'react';
+// frontend/src/components/layout/Header.jsx
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../ui/Logo';
 import { useFavorites } from '../../context/FavoritesContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Header = ({
   uniqueGenres,
@@ -25,6 +28,15 @@ const Header = ({
   setSelectedAuthor,
 }) => {
   const { favorites } = useFavorites();
+  const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+
+  const handleLogout = async () => {
+    await logout();
+    toggleMobileMenu();
+    navigate('/');
+  };
 
   return (
     <header className='fixed top-0 left-0 right-0 bg-white shadow-md z-50'>
@@ -158,27 +170,88 @@ const Header = ({
               </span>
             </button>
 
-            <button
-              className='font-medium hover:text-black transition-colors flex items-center'
-              onClick={() => setShowFavoritesModal(true)}
-              onMouseEnter={() => setHoveredNavItem('favorites')}
-              onMouseLeave={() => setHoveredNavItem(null)}
-            >
-              <span
-                className={`relative ${
-                  hoveredNavItem === 'favorites'
-                    ? 'after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-black'
-                    : ''
-                }`}
-              >
-                Favorites
-              </span>
-              {favorites.length > 0 && (
-                <span className='ml-1 bg-black text-white text-xs rounded-full px-2 py-0.5'>
-                  {favorites.length}
-                </span>
-              )}
-            </button>
+            {isAuthenticated ? (
+              <div className='relative'>
+                <button
+                  className='font-medium hover:text-black transition-colors flex items-center'
+                  onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                  onMouseEnter={() => setHoveredNavItem('profile')}
+                  onMouseLeave={() => setHoveredNavItem(null)}
+                >
+                  <span
+                    className={`relative ${
+                      hoveredNavItem === 'profile'
+                        ? 'after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-black'
+                        : ''
+                    }`}
+                  >
+                    {user?.name || 'My Account'}
+                  </span>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='h-4 w-4 ml-1'
+                    viewBox='0 0 20 20'
+                    fill='currentColor'
+                  >
+                    <path
+                      fillRule='evenodd'
+                      d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
+                      clipRule='evenodd'
+                    />
+                  </svg>
+                </button>
+
+                {/* Profile Dropdown Menu */}
+                {profileMenuOpen && (
+                  <div className='absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 py-2'>
+                    <Link
+                      to='/profile'
+                      className='block px-4 py-2 hover:bg-gray-100'
+                      onClick={() => setProfileMenuOpen(false)}
+                    >
+                      My Profile
+                    </Link>
+                    <button
+                      className='font-medium block w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors'
+                      onClick={() => {
+                        setShowFavoritesModal(true);
+                        setProfileMenuOpen(false);
+                      }}
+                    >
+                      <span className='flex items-center'>
+                        Favorites
+                        {favorites.length > 0 && (
+                          <span className='ml-2 bg-black text-white text-xs rounded-full px-2 py-0.5'>
+                            {favorites.length}
+                          </span>
+                        )}
+                      </span>
+                    </button>
+                    <button
+                      className='block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 border-t'
+                      onClick={handleLogout}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className='flex items-center space-x-4'>
+                <Link
+                  to='/login'
+                  className='text-gray-700 hover:text-black transition-colors'
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to='/register'
+                  className='bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors'
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
           {/* Search Bar */}
           <form
@@ -258,19 +331,55 @@ const Header = ({
             >
               About Us
             </button>
-            <button
-              className='font-medium hover:text-black transition-colors'
-              onClick={() => {
-                setShowFavoritesModal(true);
-              }}
-            >
-              Favorites
-              {favorites.length > 0 && (
-                <span className='ml-1 bg-black text-white text-xs rounded-full px-2 py-0.5'>
-                  {favorites.length}
-                </span>
-              )}
-            </button>
+
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to='/profile'
+                  className='font-medium hover:text-black transition-colors'
+                  onClick={toggleMobileMenu}
+                >
+                  My Profile
+                </Link>
+                <button
+                  className='font-medium hover:text-black transition-colors'
+                  onClick={() => {
+                    setShowFavoritesModal(true);
+                    toggleMobileMenu();
+                  }}
+                >
+                  <span className='flex items-center'>
+                    Favorites
+                    {favorites.length > 0 && (
+                      <span className='ml-1 bg-black text-white text-xs rounded-full px-2 py-0.5'>
+                        {favorites.length}
+                      </span>
+                    )}
+                  </span>
+                </button>
+                <button
+                  className='font-medium text-red-600 hover:text-red-800 transition-colors text-left'
+                  onClick={handleLogout}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <div className='flex flex-col space-y-2 pt-2'>
+                <Link
+                  to='/login'
+                  className='text-center border border-gray-300 py-2 rounded hover:bg-gray-50 transition-colors'
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to='/register'
+                  className='text-center bg-black text-white py-2 rounded hover:bg-gray-800 transition-colors'
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
 
             {/* Mobile Search */}
             <form onSubmit={handleSearch} className='flex mt-2'>

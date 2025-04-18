@@ -1,7 +1,15 @@
-// src/pages/Root.jsx
-import { useState, useRef } from 'react';
+// frontend/src/pages/Root.jsx
+import React, { useState, useRef } from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { useBooks } from '../hooks/useBooks';
 import { useScrollToSection } from '../hooks/useScrollToSection';
+import { AuthProvider } from '../context/AuthContext';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
 
 // Import layout components
 import Header from '../components/layout/Header';
@@ -25,7 +33,13 @@ import FavoritesModal from '../components/books/FavoritesModal';
 import AuthorQuote from '../components/authors/AuthorQuote';
 import AuthorsSection from '../components/authors/AuthorsSection';
 
-const Root = () => {
+// Import auth pages
+import Login from './Login';
+import Register from './Register';
+import Profile from './Profile';
+import NotFound from './NotFound';
+
+const LandingPage = () => {
   // Use custom hooks
   const { books, uniqueGenres, uniqueAuthors, getBooksByFilter, searchBooks } =
     useBooks();
@@ -214,6 +228,50 @@ const Root = () => {
         />
       )}
     </>
+  );
+};
+
+const Root = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public routes */}
+          <Route path='/' element={<LandingPage />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+
+          {/* Protected routes */}
+          <Route
+            path='/profile'
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/my-books'
+            element={
+              <ProtectedRoute>
+                <Navigate to='/profile' />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/favorites'
+            element={
+              <ProtectedRoute>
+                <Navigate to='/profile' state={{ tab: 'favorites' }} />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 404 page */}
+          <Route path='*' element={<NotFound />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 

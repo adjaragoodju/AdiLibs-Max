@@ -2,10 +2,30 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const db = require('../utils/db');
+const logger = require('../utils/logger');
+const { ApiError } = require('../middleware/error.middleware');
 
-exports.register = async (req, res) => {
+// Helper functions
+const generateAccessToken = (user) => {
+  return jwt.sign(
+    { id: user.id, email: user.email, name: user.name },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+};
+
+const generateRefreshToken = (user) => {
+  return jwt.sign(
+    { id: user.id, tokenId: uuidv4() },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: '7d' }
+  );
+};
+
+// Controller methods
+exports.register = async (req, res, next) => {
   const { email, password, name } = req.body;
-  const db = req.app.get('db');
 
   try {
     // Check if user already exists
@@ -15,51 +35,61 @@ exports.register = async (req, res) => {
     );
 
     if (existingUser.rows.length > 0) {
-      return res
-        .status(400)
-        .json({ message: 'User with this email already exists' });
+      throw new ApiError(400, 'User with this email already exists');
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const result = await db.query(
-      'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name, created_at',
-      [email, hashedPassword, name]
-    );
+    // Use transaction to create user and handle related operations
+    const result = await db.transaction(async (client) => {
+      // Create user
+      const userResult = await client.query(
+        'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name, created_at',
+        [email, hashedPassword, name]
+      );
 
-    const user = result.rows[0];
+      const user = userResult.rows[0];
 
-    // Generate tokens
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
+      // Generate tokens
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
 
-    // Store refresh token in database
-    await db.query(
-      'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
-      [user.id, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)] // 7 days
-    );
+      // Store refresh token in database with expiry
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 7); // 7 days from now
+
+      await client.query(
+        'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+        [user.id, refreshToken, expiryDate]
+      );
+
+      return {
+        user,
+        accessToken,
+        refreshToken,
+      };
+    });
+
+    logger.info(`User registered: ${email}`);
 
     res.status(201).json({
       message: 'User registered successfully',
       user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name,
       },
-      accessToken,
-      refreshToken,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error during registration' });
+    next(err);
   }
 };
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   const { email, password } = req.body;
-  const db = req.app.get('db');
 
   try {
     // Find user
@@ -68,7 +98,7 @@ exports.login = async (req, res) => {
     ]);
 
     if (result.rows.length === 0) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      throw new ApiError(401, 'Invalid credentials');
     }
 
     const user = result.rows[0];
@@ -77,21 +107,32 @@ exports.login = async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      throw new ApiError(401, 'Invalid credentials');
     }
+
+    // Clean up old refresh tokens for this user
+    await db.query(
+      'DELETE FROM refresh_tokens WHERE user_id = $1 AND expires_at < NOW()',
+      [user.id]
+    );
 
     // Generate tokens
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
     // Store refresh token
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 7); // 7 days from now
+
     await db.query(
       'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
-      [user.id, refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)] // 7 days
+      [user.id, refreshToken, expiryDate]
     );
 
     // Remove password from response
     delete user.password;
+
+    logger.info(`User logged in: ${email}`);
 
     res.json({
       message: 'Login successful',
@@ -100,17 +141,15 @@ exports.login = async (req, res) => {
       refreshToken,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error during login' });
+    next(err);
   }
 };
 
-exports.refreshToken = async (req, res) => {
+exports.refreshToken = async (req, res, next) => {
   const { refreshToken } = req.body;
-  const db = req.app.get('db');
 
   if (!refreshToken) {
-    return res.status(401).json({ message: 'Refresh token required' });
+    return next(new ApiError(401, 'Refresh token required'));
   }
 
   try {
@@ -121,27 +160,25 @@ exports.refreshToken = async (req, res) => {
     );
 
     if (tokenResult.rows.length === 0) {
-      return res
-        .status(403)
-        .json({ message: 'Invalid or expired refresh token' });
+      throw new ApiError(403, 'Invalid or expired refresh token');
     }
 
     // Verify token
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
-      async (err, user) => {
+      async (err, decoded) => {
         if (err) {
-          return res.status(403).json({ message: 'Invalid refresh token' });
+          return next(new ApiError(403, 'Invalid refresh token'));
         }
 
         // Get user
         const userResult = await db.query('SELECT * FROM users WHERE id = $1', [
-          user.id,
+          decoded.id,
         ]);
 
         if (userResult.rows.length === 0) {
-          return res.status(403).json({ message: 'User not found' });
+          return next(new ApiError(404, 'User not found'));
         }
 
         const currentUser = userResult.rows[0];
@@ -150,6 +187,8 @@ exports.refreshToken = async (req, res) => {
         // Generate new access token
         const accessToken = generateAccessToken(currentUser);
 
+        logger.info(`Token refreshed for user ID: ${currentUser.id}`);
+
         res.json({
           accessToken,
           user: currentUser,
@@ -157,39 +196,30 @@ exports.refreshToken = async (req, res) => {
       }
     );
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error during token refresh' });
+    next(err);
   }
 };
 
-exports.logout = async (req, res) => {
+exports.logout = async (req, res, next) => {
   const { refreshToken } = req.body;
-  const db = req.app.get('db');
 
   if (!refreshToken) {
-    return res.status(400).json({ message: 'Refresh token required' });
+    return next(new ApiError(400, 'Refresh token required'));
   }
 
   try {
     // Delete refresh token
-    await db.query('DELETE FROM refresh_tokens WHERE token = $1', [
-      refreshToken,
-    ]);
+    const result = await db.query(
+      'DELETE FROM refresh_tokens WHERE token = $1',
+      [refreshToken]
+    );
+
+    if (result.rowCount > 0) {
+      logger.info('User logged out successfully');
+    }
 
     res.json({ message: 'Logged out successfully' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error during logout' });
+    next(err);
   }
 };
-
-// Helper functions
-function generateAccessToken(user) {
-  return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
-    expiresIn: '15m',
-  });
-}
-
-function generateRefreshToken(user) {
-  return jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);
-}
