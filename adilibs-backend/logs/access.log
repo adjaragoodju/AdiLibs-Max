@@ -42,3 +42,211 @@ Data: {
   ]
 }
 [2025-04-18T11:07:07.211Z] [WARN] POST /api/auth/login 401 95ms
+[2025-04-19T04:26:53.853Z] [INFO] Server running on port 3000
+[2025-04-19T04:26:53.888Z] [INFO] Connected to PostgreSQL database
+[2025-04-19T04:26:53.896Z] [INFO] Connected to PostgreSQL database
+[2025-04-19T04:28:10.191Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM users WHERE email = $1",
+  "params": [
+    "adil@adil.com"
+  ]
+}
+[2025-04-19T04:28:10.266Z] [DEBUG] DB Query
+Data: {
+  "query": "DELETE FROM refresh_tokens WHERE user_id = $1 AND expires_at < NOW()",
+  "params": [
+    1
+  ]
+}
+[2025-04-19T04:28:10.274Z] [DEBUG] DB Query
+Data: {
+  "query": "INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
+  "params": [
+    1,
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidG9rZW5JZCI6IjkwMTBmYWY3LTRkNTktNDMzMS1hMmExLTU5MzIxNGI3YWEwYiIsImlhdCI6MTc0NTAzNjg5MCwiZXhwIjoxNzQ1NjQxNjkwfQ.tlXgwrQvyM85RoAQVZjtQFviEaFJtcQyvszxCmPsADE",
+    "2025-04-26T04:28:10.274Z"
+  ]
+}
+[2025-04-19T04:28:10.281Z] [INFO] User logged in: adil@adil.com
+[2025-04-19T04:28:10.283Z] [INFO] POST /api/auth/login 200 97ms
+[2025-04-19T04:28:30.377Z] [DEBUG] DB Query
+Data: {
+  "query": "DELETE FROM refresh_tokens WHERE token = $1",
+  "params": [
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidG9rZW5JZCI6IjkwMTBmYWY3LTRkNTktNDMzMS1hMmExLTU5MzIxNGI3YWEwYiIsImlhdCI6MTc0NTAzNjg5MCwiZXhwIjoxNzQ1NjQxNjkwfQ.tlXgwrQvyM85RoAQVZjtQFviEaFJtcQyvszxCmPsADE"
+  ]
+}
+[2025-04-19T04:28:30.392Z] [INFO] User logged out successfully
+[2025-04-19T04:28:30.394Z] [INFO] POST /api/auth/logout 200 17ms
+[2025-04-19T04:29:04.403Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM users WHERE email = $1",
+  "params": [
+    "user@user.com"
+  ]
+}
+[2025-04-19T04:29:04.495Z] [INFO] User registered: user@user.com
+[2025-04-19T04:29:04.496Z] [INFO] POST /api/auth/register 201 97ms
+[2025-04-19T04:29:42.105Z] [WARN] GET /api/my-reviews 404 4ms
+[2025-04-19T04:29:42.127Z] [INFO] GET /api/user-books 304 29ms
+[2025-04-19T04:29:42.128Z] [INFO] GET /api/user-books/stats 304 22ms
+[2025-04-20T07:39:23.206Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:39:29.701Z] [WARN] GET /api/genres 404 2ms
+[2025-04-20T07:39:29.702Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:39:30.479Z] [INFO] GET /api/authors?page=1&limit=20 200 14ms
+[2025-04-20T07:39:30.939Z] [WARN] GET /api/user-books 401 3ms
+[2025-04-20T07:39:30.944Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM refresh_tokens WHERE token = $1 AND expires_at > NOW()",
+  "params": [
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidG9rZW5JZCI6ImNlZmUyN2Y1LWY1NTctNDljYy04ZGVmLTY2MWM5NzE3MGRiNyIsImlhdCI6MTc0NTAzNjk0NCwiZXhwIjoxNzQ1NjQxNzQ0fQ.5toQ7eOdDcBJkTrPugRqo5t2Lu35cvFXcsWPD6g4Yps"
+  ]
+}
+[2025-04-20T07:39:30.945Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM refresh_tokens WHERE token = $1 AND expires_at > NOW()",
+  "params": [
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidG9rZW5JZCI6ImNlZmUyN2Y1LWY1NTctNDljYy04ZGVmLTY2MWM5NzE3MGRiNyIsImlhdCI6MTc0NTAzNjk0NCwiZXhwIjoxNzQ1NjQxNzQ0fQ.5toQ7eOdDcBJkTrPugRqo5t2Lu35cvFXcsWPD6g4Yps"
+  ]
+}
+[2025-04-20T07:39:30.956Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM users WHERE id = $1",
+  "params": [
+    2
+  ]
+}
+[2025-04-20T07:39:30.957Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM users WHERE id = $1",
+  "params": [
+    2
+  ]
+}
+[2025-04-20T07:39:30.960Z] [INFO] Token refreshed for user ID: 2
+[2025-04-20T07:39:30.961Z] [INFO] POST /api/auth/refresh 200 15ms
+[2025-04-20T07:39:30.962Z] [INFO] Token refreshed for user ID: 2
+[2025-04-20T07:39:30.962Z] [INFO] POST /api/auth/refresh 200 19ms
+[2025-04-20T07:39:30.967Z] [INFO] GET /api/user-books 200 4ms
+[2025-04-20T07:39:30.973Z] [INFO] GET /api/user-books/stats 304 3ms
+[2025-04-20T07:39:51.427Z] [INFO] Server running on port 3000
+[2025-04-20T07:39:51.440Z] [INFO] Connected to PostgreSQL database
+[2025-04-20T07:39:51.441Z] [INFO] Connected to PostgreSQL database
+[2025-04-20T07:40:01.669Z] [INFO] GET /api/user-books 304 24ms
+[2025-04-20T07:40:01.670Z] [INFO] GET /api/user-books 304 19ms
+[2025-04-20T07:40:01.676Z] [INFO] GET /api/user-books/stats 304 5ms
+[2025-04-20T07:40:01.676Z] [INFO] GET /api/user-books/stats 304 4ms
+[2025-04-20T07:40:02.518Z] [INFO] GET /api/user-books 304 8ms
+[2025-04-20T07:40:02.519Z] [INFO] GET /api/user-books 304 6ms
+[2025-04-20T07:40:02.526Z] [INFO] GET /api/user-books/stats 304 6ms
+[2025-04-20T07:40:02.527Z] [INFO] GET /api/user-books/stats 304 6ms
+[2025-04-20T07:40:09.315Z] [WARN] GET /api/genres 404 2ms
+[2025-04-20T07:40:21.211Z] [WARN] GET /api/genres 404 2ms
+[2025-04-20T07:40:21.213Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:40:21.637Z] [INFO] GET /api/authors?page=1&limit=20 304 11ms
+[2025-04-20T07:40:22.482Z] [INFO] GET /api/user-books 304 7ms
+[2025-04-20T07:40:22.489Z] [INFO] GET /api/user-books/stats 304 4ms
+[2025-04-20T07:40:22.494Z] [INFO] GET /api/user-books 304 16ms
+[2025-04-20T07:40:22.501Z] [INFO] GET /api/user-books/stats 304 6ms
+[2025-04-20T07:40:28.347Z] [WARN] GET /api/genres 404 2ms
+[2025-04-20T07:40:28.350Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:40:35.560Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:40:35.562Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:43:55.956Z] [WARN] GET /api/genres 404 2ms
+[2025-04-20T07:43:55.959Z] [WARN] GET /api/genres 404 2ms
+[2025-04-20T07:44:01.966Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:44:01.968Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:46:47.070Z] [WARN] GET /api/genres 404 2ms
+[2025-04-20T07:46:47.071Z] [WARN] GET /api/genres 404 0ms
+[2025-04-20T07:46:51.435Z] [INFO] GET /api/authors?page=1&limit=20 304 10ms
+[2025-04-20T07:46:51.435Z] [INFO] GET /api/authors?page=1&limit=20 304 11ms
+[2025-04-20T07:46:51.826Z] [INFO] GET /api/user-books 304 4ms
+[2025-04-20T07:46:51.827Z] [INFO] GET /api/user-books 304 3ms
+[2025-04-20T07:46:51.836Z] [INFO] GET /api/user-books/stats 304 4ms
+[2025-04-20T07:46:51.836Z] [INFO] GET /api/user-books/stats 304 6ms
+[2025-04-20T07:46:57.769Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:46:57.770Z] [WARN] GET /api/genres 404 1ms
+[2025-04-20T07:46:59.380Z] [INFO] GET /api/user-books 304 16ms
+[2025-04-20T07:46:59.381Z] [INFO] GET /api/user-books 304 20ms
+[2025-04-20T07:46:59.390Z] [INFO] GET /api/user-books/stats 304 6ms
+[2025-04-20T07:46:59.391Z] [INFO] GET /api/user-books/stats 304 5ms
+[2025-04-20T07:47:00.445Z] [INFO] GET /api/authors?page=1&limit=20 304 3ms
+[2025-04-20T07:47:00.446Z] [INFO] GET /api/authors?page=1&limit=20 304 3ms
+[2025-04-20T07:47:02.153Z] [INFO] GET /api/user-books 304 7ms
+[2025-04-20T07:47:02.154Z] [INFO] GET /api/user-books 304 5ms
+[2025-04-20T07:47:02.160Z] [INFO] GET /api/user-books/stats 304 5ms
+[2025-04-20T07:47:02.160Z] [INFO] GET /api/user-books/stats 304 3ms
+[2025-04-20T07:47:07.850Z] [WARN] GET /api/books/favorites 400 2ms
+[2025-04-21T05:59:15.911Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM users WHERE email = $1",
+  "params": [
+    "qwerty@qwerty.com"
+  ]
+}
+[2025-04-21T05:59:16.001Z] [INFO] User registered: qwerty@qwerty.com
+[2025-04-21T05:59:16.001Z] [INFO] POST /api/auth/register 201 93ms
+[2025-04-21T09:22:26.524Z] [WARN] GET /api/genres 404 2ms
+[2025-04-22T07:41:45.535Z] [WARN] GET /api/genres 404 1ms
+[2025-04-22T07:42:36.868Z] [WARN] GET /api/genres 404 1ms
+[2025-04-22T07:42:36.869Z] [WARN] GET /api/genres 404 0ms
+[2025-04-22T07:42:42.039Z] [WARN] GET /api/genres 404 1ms
+[2025-04-22T07:42:42.040Z] [WARN] GET /api/genres 404 1ms
+[2025-04-22T07:42:42.990Z] [INFO] GET /api/authors?page=1&limit=20 304 17ms
+[2025-04-22T07:42:43.394Z] [WARN] GET /api/user-books 401 3ms
+[2025-04-22T07:42:43.398Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM refresh_tokens WHERE token = $1 AND expires_at > NOW()",
+  "params": [
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidG9rZW5JZCI6ImE2MmZiMDllLTEyNDMtNDdiYy1iOGQ2LTk5MmFmMTA5MTY1MyIsImlhdCI6MTc0NTIxNTE1NSwiZXhwIjoxNzQ1ODE5OTU1fQ.3EfkaqXcJQjnMkw25wKOOvk_v500T0fCVOQx0OLi9O8"
+  ]
+}
+[2025-04-22T07:42:43.400Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM refresh_tokens WHERE token = $1 AND expires_at > NOW()",
+  "params": [
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidG9rZW5JZCI6ImE2MmZiMDllLTEyNDMtNDdiYy1iOGQ2LTk5MmFmMTA5MTY1MyIsImlhdCI6MTc0NTIxNTE1NSwiZXhwIjoxNzQ1ODE5OTU1fQ.3EfkaqXcJQjnMkw25wKOOvk_v500T0fCVOQx0OLi9O8"
+  ]
+}
+[2025-04-22T07:42:43.412Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM users WHERE id = $1",
+  "params": [
+    3
+  ]
+}
+[2025-04-22T07:42:43.414Z] [DEBUG] DB Query
+Data: {
+  "query": "SELECT * FROM users WHERE id = $1",
+  "params": [
+    3
+  ]
+}
+[2025-04-22T07:42:43.415Z] [INFO] Token refreshed for user ID: 3
+[2025-04-22T07:42:43.416Z] [INFO] POST /api/auth/refresh 200 18ms
+[2025-04-22T07:42:43.417Z] [INFO] Token refreshed for user ID: 3
+[2025-04-22T07:42:43.417Z] [INFO] POST /api/auth/refresh 200 17ms
+[2025-04-22T07:42:43.424Z] [INFO] GET /api/user-books 200 6ms
+[2025-04-22T07:42:43.431Z] [INFO] GET /api/user-books/stats 304 5ms
+[2025-04-22T07:42:43.798Z] [WARN] GET /api/books/favorites 400 1ms
+[2025-04-22T07:42:44.731Z] [INFO] GET /api/user-books 304 5ms
+[2025-04-22T07:42:44.739Z] [INFO] GET /api/user-books/stats 304 5ms
+[2025-04-22T07:42:44.744Z] [INFO] GET /api/user-books 304 15ms
+[2025-04-22T07:42:44.750Z] [INFO] GET /api/user-books/stats 304 4ms
+[2025-04-22T07:42:46.535Z] [WARN] GET /api/books/favorites 400 1ms
+[2025-04-22T07:42:46.535Z] [WARN] GET /api/books/favorites 400 0ms
+[2025-04-22T07:42:54.220Z] [INFO] GET /api/authors?page=1&limit=20 304 3ms
+[2025-04-22T07:42:54.744Z] [INFO] GET /api/user-books 304 6ms
+[2025-04-22T07:42:54.751Z] [INFO] GET /api/user-books/stats 304 3ms
+[2025-04-22T07:42:54.759Z] [INFO] GET /api/user-books 304 18ms
+[2025-04-22T07:42:54.764Z] [INFO] GET /api/user-books/stats 304 3ms
+[2025-04-22T07:43:01.005Z] [WARN] GET /api/books/favorites 400 1ms
+[2025-04-22T07:43:01.006Z] [WARN] GET /api/books/favorites 400 0ms
+[2025-04-22T07:43:09.114Z] [INFO] GET /api/user-books 304 33ms
+[2025-04-22T07:43:09.115Z] [INFO] GET /api/user-books 304 31ms
+[2025-04-22T07:43:09.123Z] [INFO] GET /api/user-books/stats 304 6ms
+[2025-04-22T07:43:09.124Z] [INFO] GET /api/user-books/stats 304 4ms
+[2025-04-22T07:43:09.563Z] [INFO] GET /api/authors?page=1&limit=20 304 2ms
+[2025-04-22T07:43:09.564Z] [INFO] GET /api/authors?page=1&limit=20 304 2ms
+[2025-04-22T07:43:09.934Z] [WARN] GET /api/genres 404 2ms
