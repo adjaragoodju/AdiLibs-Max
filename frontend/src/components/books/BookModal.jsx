@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from '../layout/Modal';
-import { useFavorites } from '../../context/FavoritesContext';
+import { useFavorites } from '../../contexts/FavoritesContext';
 
 const BookModal = ({ selectedBook, setSelectedBook }) => {
   const { favorites, addToFavorites, removeFromFavorites } = useFavorites();

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Modal from '../layout/Modal';
-import { useFavorites } from '../../context/FavoritesContext';
+import { useFavorites } from '../../contexts/FavoritesContext';
 
 const AuthorQuote = () => {
   const [showBookModal, setShowBookModal] = useState(false);
